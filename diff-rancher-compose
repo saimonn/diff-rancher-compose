@@ -1,0 +1,30 @@
+#!/bin/bash
+
+changed_ressource=0
+while read -r LINE
+do
+  if grep -q '^.*[[:space:]]\+.*~' <<<"$LINE";then
+    changing_ressource=1;
+  else
+    changing_ressource=0;
+  fi
+  if [ $changed_ressource -eq 1 ] && grep -q '^.*[a-z]\+_compose:'<<<"$LINE"
+  then
+    changing_ressource=1;
+    TMPDIR=$(mktemp -d /tmp/diffXXXX)
+    LEFT=${TMPDIR}/old
+    RIGHT=${TMPDIR}/new
+    echo ""
+    echo "$LINE" | sed 's/^\([^"]*_compose[^"]*:\).*/\1/'
+    echo "$LINE" | sed 's/" => ".*$//'  | sed 's/^[^"]*"// ; s/\\n/\n/g ' >$LEFT
+    echo "$LINE" | sed 's/^.*" => "//'  | sed 's/"$//      ; s/\\n/\n/g ' >$RIGHT
+    diff -d --color=always -u --label BLEUARGHBROPFBLURPSLURP $LEFT --label BLEUARGHBROPFBLURPSLURP $RIGHT | grep -v 'BLEUARGHBROPFBLURPSLURP'
+    rm -f $LEFT $RIGHT
+    rmdir $TMPDIR
+  else
+  echo "$LINE"
+  fi
+
+
+  changed_ressource=$changing_ressource
+done
