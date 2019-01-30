@@ -1,9 +1,9 @@
-diff-rancher-compose
+diff-terraform
 --------------------
 
-shell script to format ``terraform {plan,apply}`` output into a readable diff
+shell script to format ``terraform {plan,apply}`` multiline diff output into a something more readable
 
 usage:
 ```
-terraform plan | diff-rancher-compose
+terraform plan | diff-terraform [diff-options]
  ```
